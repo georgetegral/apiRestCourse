@@ -1,0 +1,86 @@
+<html>
+    <head>
+        <linkrel="stylesheet"href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"crossorigin="anonymous">
+    </head>
+    <body>
+        <tableid="booksTable"class="table">
+            <thead>
+                <tr>
+                    <th>Titulo</th>
+                    <th>Id_Autor</th>
+                    <th>Id_Genero</th>
+                </tr>
+            </thead>
+        </table>
+        <tbody>
+        </tbody>
+        <inputtype="button"value="Cargar libros"id="loadBooks"/>
+        <divstyle="display: none;"id="messages">
+            <p></p>
+        </div>
+        <divstyle="display: none;"id="bookForm">
+            <hr/>
+            <table>
+                <tr>
+                    <td>Titulo:</td>
+                    <td><inputtype="text"name="bookTitle"id="bookTitle"></td>
+                </tr>
+                <tr>
+                    <td>ID Autor:</td>
+                    <td><inputtype="number"name="bookAuthorId"id="bookAuthorId"min="1"></td>
+                </tr>
+                <tr>
+                    <td>ID Genero:</td>
+                    <td><inputtype="number"name="bookGenreId"id="bookGenreId"min="1"></td>
+                </tr>
+                <tr>
+                    <tdcolspan="2"><inputtype="button"value="Guardar"id="bookSave"/></td>
+                </tr>
+            </table>
+        </div>
+    </body>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js" type="text/javascript"></script>
+    <script type="text/javascript">
+    $('#loadBooks').click( function() {
+        $('#messages').first('p').text('Cargando libros...');
+        $('#messages').show();
+        $.ajax( {
+            'url': 'http://localhost:8000/books',
+            'success' : function( data ) {
+                $('#messages').hide();
+                $('#booksTable > tbody').empty();
+                for ( b in data ) {
+                    addBook( data[b] );
+                }
+                $('#bookForm').show();
+            }
+        } );
+    });
+
+    function addBook( book )
+    {
+        $('#booksTable tr:last').after('<tr><td>' + book.titulo + '</td><td>' + book.id_autor + '</td><td>' + book.id_genero + '</td></tr>');
+    }
+
+    $('#bookSave').click(function() {
+        var newBook = {
+            'titulo' : $('#bookTitle').val(),
+            'id_autor' : $('#bookAuthorId').val(),
+            'id_genero' : $('#bookGenreId').val()
+        };
+        $('#messages').first('p').text('Guardando libro...');
+        $('#messages').show();
+
+        $.ajax({
+            'url' : 'http://localhost:8000/books',
+            'method': 'POST',
+            'data': JSON.stringify(newBook),
+            'success': function(data){
+                $('#messages').hide();
+                addBook(newBook);
+            }
+        });
+    });
+    
+    </script>
+</html>
