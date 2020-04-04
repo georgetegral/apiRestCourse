@@ -39,16 +39,21 @@ $resourceId = array_key_exists('resource_id', $_GET) ? $_GET['resource_id'] : ''
 
 switch ( strtoupper($_SERVER['REQUEST_METHOD'])){
     case 'GET':
+        // en caso de que no pidan ningún recurso
         if (empty($resourceId)){
             echo json_encode($books);
         } else {
+            //Si se pide un recurso en específico
             if( array_key_exists($resourceId,$books)){
                 echo json_encode( $books[$resourceId]);
             }
         }
-        
         break;
     case 'POST':
+        $json = file_get_contents('php://input');
+        $books[] = json_decode ($json, true);
+        //echo array_keys($books)[count($books) - 1];
+        echo json_encode($books);
         break;
     case 'PUT':
         break;
